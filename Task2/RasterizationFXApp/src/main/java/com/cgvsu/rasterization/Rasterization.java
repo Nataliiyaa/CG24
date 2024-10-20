@@ -94,39 +94,35 @@ public class Rasterization {
         }
     }
 
-//    public static void fillEllipseGradient(
-//            final GraphicsContext graphicsContext,
-//            final int a, final int b,
-//            final int centerX, final int centerY,
-//            final Color startColor, final Color endColor
-//    )
-//    {
-//        final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
-//
-//        drawEllipse(graphicsContext, a, b, centerX, centerY, endColor);
-//
-//        // Проходимся по вертикальной оси эллипса
-//        for (int y = -b; y <= b; y++) {
-//            // Находим левую и правую границы эллипса
-//            int leftX = centerX - findEllipseX(centerX, a, b, y); // Инвертируем результат для левой границы
-//            int rightX = centerX + findEllipseX(centerX, a, b, y);
-//
-//            // Заполняем пиксели между границами
-//            for (int x = leftX; x <= rightX; x++) {
-//                double distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
-//                double blendFactor = distance / a;
-//                blendFactor = Math.max(0, Math.min(1, blendFactor));
-//
-//                int red = (int) (startColor.getRed() * (1 - blendFactor) + endColor.getRed() * blendFactor);
-//                int green = (int) (startColor.getGreen() * (1 - blendFactor) + endColor.getGreen() * blendFactor);
-//                int blue = (int) (startColor.getBlue() * (1 - blendFactor) + endColor.getBlue() * blendFactor);
-//
-//                // Устанавливаем цвет для текущего пикселя
-//                Color color = Color.rgb(red, green, blue);
-//                pixelWriter.setColor(x, centerY + y, color);
-//            }
-//        }
-//    }
+    public static void fillEllipseGradient(
+            final GraphicsContext graphicsContext,
+            final int a, final int b,
+            final int centerX, final int centerY
+    )
+    {
+        final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
+
+        drawEllipse(graphicsContext, a, b, centerX, centerY, Color.BLACK);
+
+        // Проходимся по вертикальной оси эллипса
+        for (int y = -b; y <= b; y++) {
+            // Находим левую и правую границы эллипса
+            int leftX = centerX - findEllipseX(centerX, a, b, y); // Инвертируем результат для левой границы
+            int rightX = centerX + findEllipseX(centerX, a, b, y);
+
+            // Заполняем пиксели между границами
+            for (int x = leftX; x <= rightX; x++) {
+
+                int red = (int) (255 * (1 - Math.abs(y) / (double) b));
+                int green = (int) (255 * (Math.abs(y) / (double) b));
+                int blue = 0; // Синий остается нулевым
+
+                // Устанавливаем цвет для текущего пикселя
+                Color color = Color.rgb(red, green, blue);
+                pixelWriter.setColor(x, centerY + y, color);
+            }
+        }
+    }
 
     private static int findEllipseX(int centerX, int rx, int ry, int y) {
         // Уравнение эллипса: (x^2 / rx^2) + (y^2 / ry^2) = 1
