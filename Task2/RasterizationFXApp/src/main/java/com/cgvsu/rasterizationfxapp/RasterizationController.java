@@ -22,7 +22,7 @@ public class RasterizationController {
 
 //        Rasterization.drawRectangle(canvas.getGraphicsContext2D(), 200, 300, 200, 100, Color.CHOCOLATE);
 //        Rasterization.drawRectangle(canvas.getGraphicsContext2D(), 250, 250, 50, 200, Color.AQUA);
-        Rasterization.drawEllipse(canvas.getGraphicsContext2D(), 60,80,300,120, Color.RED);
+        Rasterization.fillEllipse(canvas.getGraphicsContext2D(), 60,80,300,120, Color.RED);
     }
 
 }

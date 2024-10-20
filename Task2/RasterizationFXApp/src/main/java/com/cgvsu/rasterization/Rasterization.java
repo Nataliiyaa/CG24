@@ -23,7 +23,7 @@ public class Rasterization {
             final GraphicsContext graphicsContext,
             final int a, final int b,
             final int centerX, final int centerY,
-            Color color)
+            final Color color)
     {
         final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
 
@@ -67,5 +67,35 @@ public class Rasterization {
             }
         }
 
+    }
+
+    public static void fillEllipse(
+            final GraphicsContext graphicsContext,
+            final int a, final int b,
+            final int centerX, final int centerY,
+            final Color color
+    )
+    {
+        final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
+
+        drawEllipse(graphicsContext, a, b, centerX, centerY, color);
+
+        // Проходимся по вертикальной оси эллипса
+        for (int y = -b; y <= b; y++) {
+            // Находим левую и правую границы эллипса
+            int leftX = centerX - findEllipseX(centerX, a, b, y); // Инвертируем результат для левой границы
+            int rightX = centerX + findEllipseX(centerX, a, b, y);
+
+            // Заполняем пиксели между границами
+            for (int x = leftX; x <= rightX; x++) {
+                pixelWriter.setColor(x, centerY + y, color);
+            }
+        }
+    }
+
+    private static int findEllipseX(int centerX, int rx, int ry, int y) {
+        // Уравнение эллипса: (x^2 / rx^2) + (y^2 / ry^2) = 1
+        double x2 = rx * rx * (1 - ((double) (y * y) / (ry * ry)));
+        return (int) Math.sqrt(x2); // Возвращаем только положительное значение x
     }
 }
