@@ -20,8 +20,14 @@ public class RasterizationController {
         anchorPane.prefWidthProperty().addListener((ov, oldValue, newValue) -> canvas.setWidth(newValue.doubleValue()));
         anchorPane.prefHeightProperty().addListener((ov, oldValue, newValue) -> canvas.setHeight(newValue.doubleValue()));
 
-        Rasterization.fillEllipse(canvas.getGraphicsContext2D(), 60,80,300,120, Color.RED);
-        Rasterization.fillEllipseGradient(canvas.getGraphicsContext2D(), 80,60,300,420);
+        Rasterization.drawEllipse(canvas.getGraphicsContext2D(), 100, 100, 60, 80, Color.RED);
+
+        Rasterization.fillEllipse(canvas.getGraphicsContext2D(), 400, 100, 80, 60, Color.RED);
+
+
+        Rasterization.fillEllipse(canvas.getGraphicsContext2D(), 300, 300, 100, 60,
+                new Color[]{Color.RED, Color.BLUEVIOLET, Color.AQUA},
+                new float[]{0.2f,0.5f, 0.8f});
     }
 
 }
