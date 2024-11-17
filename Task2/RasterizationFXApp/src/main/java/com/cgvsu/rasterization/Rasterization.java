@@ -19,6 +19,8 @@ public class Rasterization {
                 pixelWriter.setColor(col, row, color);
     }
 
+
+    //  рисование контура эллипса
     public static void drawEllipse(final GraphicsContext graphicsContext, int x0, int y0, int a, int b, Color color) {
         final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
 
@@ -44,6 +46,8 @@ public class Rasterization {
         }
     }
 
+
+    //  рисование симметричных точек
     private static void drawingEllipse(PixelWriter pixelWriter, int x0, int y0, int x, int y, Color color) {
         pixelWriter.setColor(x0 + x, y0 + y, color);
         pixelWriter.setColor(x0 - x, y0 + y, color);
@@ -51,6 +55,8 @@ public class Rasterization {
         pixelWriter.setColor(x0 - x, y0 - y, color);
     }
 
+
+    //  заливка горизонтальной линии цветом между симметричными точками
     private static void fillingEllipse(PixelWriter pixelWriter, int x0, int y0, int x, int y, Color color) {
         for (int i = x0 - x; i <= x0 + x; i++) {
             pixelWriter.setColor(i, y0 + y, color);
@@ -58,6 +64,8 @@ public class Rasterization {
         }
     }
 
+
+    //  заливка эллипса однородным цветом
     public static void fillEllipse(final GraphicsContext graphicsContext, int x0, int y0, int a, int b, Color color) {
         final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
 
@@ -83,28 +91,30 @@ public class Rasterization {
         }
     }
 
-    private static void fillingEllipse2V(PixelWriter pixelWriter, int x0, int y0, int x, int y, int a, int b, Color[] colors, float[] interval) {
+
+    //  заливка эллипса градиентом, использую массив цветов и массив интервалов
+    //  (длина массива цветов на один больше длины массива интервалов)
+    private static void fillingEllipseGradient(PixelWriter pixelWriter, int x0, int y0, int x, int y, int a, int b, Color[] colors, float[] interval) {
 
         for (int i = x0 - x; i <= x0 + x; i++) {
-            double dist = Math.sqrt(Math.pow(i - x0, 2) + Math.pow(y, 2));
-            double max = (a * b) / Math.sqrt(a * a * Math.pow(y / dist, 2) + b * b * Math.pow((i - x0) / dist, 2));
-            double fraction = dist / max;
+            double dist = Math.sqrt(Math.pow(i - x0, 2) + Math.pow(y, 2));  // дистанция от текущего пикселя до центра
+            double max = (a * b) / Math.sqrt(a * a * Math.pow(y / dist, 2) + b * b * Math.pow((i - x0) / dist, 2));  // макс дист от центра до края эллипса в направлении текущей точки
+            double share = dist / max;  // доля расстояния
 
-            // Проверяем интервал, в который попадает fraction, и используем соответствующие цвета
-            Color color = colors[colors.length - 1]; // Цвет по умолчанию, если fraction выходит за пределы
-
+            // Проверяем интервал, в который попадает share, и используем соответствующие цвета
+            Color color = colors[colors.length - 1]; // Цвет по умолчанию, если share выходит за пределы
 
             for (int j = 1; j < interval.length; j++) {
-                if (fraction <= interval[j]) {
-                    // Проверка на равные интервалы, чтобы избежать переходов
+                if (share <= interval[j]) {
+                    // Проверка на равные интервалы, чтобы избежать переходов и деления на 0
                     if (interval[j] == interval[j - 1]) {
                         color = colors[j - 1];
                     } else {
                         // Расчет нормализованной доли для текущего интервала
-                        double distInInterval = fraction - interval[j - 1];
+                        double distInInterval = share - interval[j - 1];
                         double maxInInterval = interval[j] - interval[j - 1];
-                        double normalizedFraction = distInInterval / maxInInterval;
-                        color = interpolateColor(colors[j - 1], colors[j], normalizedFraction);
+                        double normalizedShare = distInInterval / maxInInterval;
+                        color = Interpolation.interpolateColor(colors[j - 1], colors[j], normalizedShare);
                     }
                     break;
                 }
@@ -117,7 +127,8 @@ public class Rasterization {
     }
 
 
-    public static void fillEllipse(final GraphicsContext graphicsContext, int x0, int y0, int a, int b, Color[] colors, float[] interval) {
+    // рисование одной четверти эллипса
+    public static void fillEllipseGradient(final GraphicsContext graphicsContext, int x0, int y0, int a, int b, Color[] colors, float[] interval) {
         final PixelWriter pixelWriter = graphicsContext.getPixelWriter();
 
         int x = 0;
@@ -125,7 +136,7 @@ public class Rasterization {
         int error = 0;
 
         while (b * b * x < a * a * y) {
-            fillingEllipse2V(pixelWriter, x0, y0, x, y, a, b, colors, interval);
+            fillingEllipseGradient(pixelWriter, x0, y0, x, y, a, b, colors, interval);
             error = b * b * (x + 1) * (x + 1) + a * a * y * (y - 1) - a * a * b * b;
             x = x + 1;
             if (error >= 0) {
@@ -133,7 +144,7 @@ public class Rasterization {
             }
         }
         while (y >= 0) {
-            fillingEllipse2V(pixelWriter, x0, y0, x, y, a, b, colors, interval);
+            fillingEllipseGradient(pixelWriter, x0, y0, x, y, a, b, colors, interval);
             error = b * b * x * (x + 1) + a * a * (y - 1) * (y - 1) - a * a * b * b;
             if (error < 0) {
                 x = x + 1;
@@ -143,16 +154,4 @@ public class Rasterization {
         pixelWriter.setColor(x0, y0, colors[0]);
     }
 
-    // Метод для линейной интерполяции между двумя цветами с заданием параметра удаленности
-    private static Color interpolateColor(Color startColor, Color endColor, double fraction) {
-        double red = startColor.getRed() + (endColor.getRed() - startColor.getRed()) * fraction;
-        double green = startColor.getGreen() + (endColor.getGreen() - startColor.getGreen()) * fraction;
-        double blue = startColor.getBlue() + (endColor.getBlue() - startColor.getBlue()) * fraction;
-        double opacity = startColor.getOpacity() + (endColor.getOpacity() - startColor.getOpacity()) * fraction;
-
-        red = Math.max(0, Math.min(1, red));
-        green = Math.max(0, Math.min(1, green));
-        blue = Math.max(0, Math.min(1, blue));
-        return new Color(red, green, blue, opacity);
-    }
 }
