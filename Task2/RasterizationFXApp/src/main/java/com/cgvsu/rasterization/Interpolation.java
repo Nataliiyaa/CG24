@@ -8,8 +8,8 @@ public class Interpolation {
      * Выполняет линейную интерполяцию между двумя цветами.
      *
      * @param startColor Начальный цвет.
-     * @param endColor   Конечный цвет.
-     * @param share   Доля интерполяции (от 0.0 до 1.0).
+     * @param endColor Конечный цвет.
+     * @param share Доля интерполяции (от 0.0 до 1.0).
      * @return Интерполированный цвет.
      */
     public static Color interpolateColor(Color startColor, Color endColor, double share) {
