@@ -9,14 +9,14 @@ public class Interpolation {
      *
      * @param startColor Начальный цвет.
      * @param endColor   Конечный цвет.
-     * @param fraction   Доля интерполяции (от 0.0 до 1.0).
+     * @param share   Доля интерполяции (от 0.0 до 1.0).
      * @return Интерполированный цвет.
      */
-    public static Color interpolateColor(Color startColor, Color endColor, double fraction) {
-        double red = startColor.getRed() + (endColor.getRed() - startColor.getRed()) * fraction;
-        double green = startColor.getGreen() + (endColor.getGreen() - startColor.getGreen()) * fraction;
-        double blue = startColor.getBlue() + (endColor.getBlue() - startColor.getBlue()) * fraction;
-        double opacity = startColor.getOpacity() + (endColor.getOpacity() - startColor.getOpacity()) * fraction;
+    public static Color interpolateColor(Color startColor, Color endColor, double share) {
+        double red = startColor.getRed() + (endColor.getRed() - startColor.getRed()) * share;
+        double green = startColor.getGreen() + (endColor.getGreen() - startColor.getGreen()) * share;
+        double blue = startColor.getBlue() + (endColor.getBlue() - startColor.getBlue()) * share;
+        double opacity = startColor.getOpacity() + (endColor.getOpacity() - startColor.getOpacity()) * share;
 
         red = Math.max(0, Math.min(1, red));
         green = Math.max(0, Math.min(1, green));

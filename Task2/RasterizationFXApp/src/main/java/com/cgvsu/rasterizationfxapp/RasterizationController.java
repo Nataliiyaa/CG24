@@ -27,7 +27,7 @@ public class RasterizationController {
 
         Rasterization.fillEllipseGradient(canvas.getGraphicsContext2D(), 300, 300, 100, 60,
                 new Color[]{Color.RED, Color.BLUEVIOLET, Color.AQUA},
-                new float[]{0.2f,0.5f, 0.8f});
+                new float[]{0.2f, 0.5f, 0.8f});
     }
 
 }
